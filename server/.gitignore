@@ -1,0 +1,4 @@
+node_modules
+elad_notes.*
+.env
+coverage
