@@ -12,13 +12,26 @@ export async function findActiveTimesheetByUser(userId: string) {
   });
 }
 
-export async function findTimesheetById(timesheetId: string) {
-  return TimesheetModel.findById(timesheetId);
-}
+export async function findTimesheetById(id: string) {
+    return TimesheetModel.findById(id).populate('employee').populate('manager');
+  }
 
-export async function updateTimesheet(timesheetId: string, updates: Partial<ITimesheet>) {
-  return TimesheetModel.findByIdAndUpdate(timesheetId, updates, { new: true });
-}
+  
+
+  export async function findActiveTimesheetByEmployee(employeeId: string) {
+    // "Active" = has startTime but no endTime set => user is 'clocked in'
+    return TimesheetModel.findOne({
+      employee: employeeId,
+      endTime: { $exists: false }
+    }).populate('employee').populate('manager');
+  }
+  
+  export async function updateTimesheet(id: string, update: Partial<ITimesheet>) {
+    return TimesheetModel.findByIdAndUpdate(id, update, { new: true })
+      .populate('employee')
+      .populate('manager');
+  }
+
 
 export async function findPendingClockedOutByManager(managerId: string) {
   return TimesheetModel.find({
@@ -29,3 +42,4 @@ export async function findPendingClockedOutByManager(managerId: string) {
     .populate('employee')
     .populate('manager');
 }
+
