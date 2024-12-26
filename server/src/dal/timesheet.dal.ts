@@ -1,28 +1,31 @@
 import { TimesheetModel } from '../models/timesheet.model';
 import { ITimesheet } from '../models/timesheet.model';
 
-export async function createTimesheet(data: ITimesheet) {
+export async function createTimesheet(data: Partial<ITimesheet>) {
   return TimesheetModel.create(data);
 }
 
-export async function getTimesheetsByManager(managerId: string) {
-  return TimesheetModel.find({ manager: managerId })
-    .populate('employee')
-    .populate('manager');
+export async function findActiveTimesheetByUser(userId: string) {
+  return TimesheetModel.findOne({
+    employee: userId,
+    isActive: true,
+  });
 }
 
-export async function getTimesheetById(timesheetId: string) {
-  return TimesheetModel.findById(timesheetId)
-    .populate('employee')
-    .populate('manager');
+export async function findTimesheetById(timesheetId: string) {
+  return TimesheetModel.findById(timesheetId);
 }
 
-export async function updateTimesheetStatus(timesheetId: string, status: string) {
-  return TimesheetModel.findByIdAndUpdate(
-    timesheetId,
-    { status },
-    { new: true }
-  )
+export async function updateTimesheet(timesheetId: string, updates: Partial<ITimesheet>) {
+  return TimesheetModel.findByIdAndUpdate(timesheetId, updates, { new: true });
+}
+
+export async function findPendingClockedOutByManager(managerId: string) {
+  return TimesheetModel.find({
+    manager: managerId,
+    status: 'PENDING',
+    isActive: false, // means user has clocked out
+  })
     .populate('employee')
     .populate('manager');
 }
