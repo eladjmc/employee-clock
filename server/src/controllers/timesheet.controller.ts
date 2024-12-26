@@ -1,11 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import * as TimesheetService  from '../services/timesheet.service';
 import { TimesheetStatus } from '../constants/timesheet.constant';
+import { findManagerByUserId } from '../services/user.service';
 
 export async function clockInController(req: Request, res: Response, next: NextFunction) {
   try {
     const { userId } = (req as any).user;       // from JWT
-    const { managerId, reportText } = req.body; // managerId is needed
+    const { reportText } = req.body;
+    const managerId = await findManagerByUserId(userId);
 
     const newTimesheet = await TimesheetService.clockIn(userId, managerId, reportText);
      res.status(201).json(newTimesheet);
@@ -16,10 +18,10 @@ export async function clockInController(req: Request, res: Response, next: NextF
 
 export async function clockOutController(req: Request, res: Response, next: NextFunction) {
   try {
-    const { timesheetId } = req.params;
+    const { userId } = (req as any).user;  // from JWT
     const { reportText } = req.body;
 
-    const updatedTimesheet = await TimesheetService.clockOut(timesheetId, reportText);
+    const updatedTimesheet = await TimesheetService.clockOut(userId, reportText);
      res.json(updatedTimesheet);
   } catch (error) {
     next(error);

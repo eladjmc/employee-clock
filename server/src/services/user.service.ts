@@ -1,15 +1,20 @@
-import { CreateUserDto } from '../dto/create-user.dto';
-import { ApiError } from '../errors/api-error';
-import { createUser, getAllUsers, getUserById } from '../dal/user.dal';
-import { Roles } from '../constants/roles.constant';
+import { CreateUserDto } from "../dto/create-user.dto";
+import { ApiError } from "../errors/api-error";
+import { createUser, getAllUsers, getUserById } from "../dal/user.dal";
+import { Roles } from "../constants/roles.constant";
+import { Types } from "mongoose";
+import { IUser } from "../models/user.model";
 
 export async function createNewUser(dto: CreateUserDto) {
-  if (dto.role === Roles.EMPLOYEE && !dto.manager) {
-    throw new ApiError(400, 'Employee must have a manager');
+  if (dto.role === Roles.EMPLOYEE) {
+    if (!dto.manager) {
+      throw new ApiError(400, "Employee must have a manager");
+    }
+    const manager = await getUserById(dto.manager);
+    if (!manager || manager.role !== Roles.MANAGER) {
+      throw new ApiError(400, "The manager you provided is invalid");
+    }
   }
-
-  // Here you could also check if the provided manager actually exists and is a MANAGER
-  // ...
 
   return createUser({
     firstName: dto.firstName,
@@ -18,8 +23,8 @@ export async function createNewUser(dto: CreateUserDto) {
     password: dto.password,
     role: dto.role,
     manager: dto.manager
-      ? (dto.manager as any) // cast to ObjectId if needed
-      : null
+      ? new Types.ObjectId(dto.manager)
+      : null,
   });
 }
 
@@ -33,4 +38,12 @@ export async function findUserById(userId: string) {
     throw new ApiError(404, `User with ID ${userId} not found`);
   }
   return user;
+}
+
+export async function findManagerByUserId(userId:string) {
+  const user = await findUserById(userId);
+  if(!user.manager){
+    throw new ApiError(404, `User with ID ${userId} does not have a manager`);
+  }
+  return user.manager.toString()
 }

@@ -19,3 +19,4 @@ export async function getUserByEmailWithPassword(email: string) {
 export async function getUserById(userId: string) {
   return UserModel.findById(userId);
 }
+

@@ -22,11 +22,7 @@ timesheetRouter.post(
 
 
 // Clock out route.
-timesheetRouter.put(
-  '/clockout/:timesheetId',
-  authenticateJWT,
-  clockOutController
-);
+timesheetRouter.put('/clockout', authenticateJWT, clockOutController);
 
 // Get the clock-in status of the logged in user:
 // returns the active timesheet or null(null means he didn't clock in)

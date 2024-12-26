@@ -45,19 +45,22 @@ export async function clockOut(userId: string, finalReportText?: string) {
   const diffHours = diffMs / ONE_HOUR;
 
   let endTime = new Date(now);
-  let reportText = finalReportText ? finalReportText : '';
+  let reportText = finalReportText ? finalReportText : timesheet.reportText ? timesheet.reportText : "";
 
   if (diffHours > 12) {
     // Cap at 12 hours
-    endTime = new Date(startTime + 12 * ONE_HOUR);
+    endTime = new Date(startTime + (12 * ONE_HOUR));
     reportText = 'Did not clock out'; 
   }
+
+  // I think that I might want to add this field or create this logic later to display the total amount of time
+  // const totalHours = (endTime.getTime() - timesheet.startTime.getTime()) /ONE_HOUR;
 
   const updated = await TimesheetDal.updateTimesheet(timesheet.id, {
     endTime,
     reportText,
     isActive: false,
-    status: TimesheetStatus.PENDING, // Now awaiting manager approval
+    status: TimesheetStatus.PENDING, // Now awaiting manager approval Actually not really needed XD
   });
   return updated;
 }

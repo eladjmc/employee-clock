@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import { Roles } from "../constants/roles.constant";
 import bcrypt from "bcrypt";
 
@@ -8,15 +8,7 @@ export interface IUser {
   email: string;
   password: string;
   role: Roles;
-  manager?: Schema.Types.ObjectId;
-}
-
-export interface IUserNoPassword {
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: Roles;
-  manager?: Schema.Types.ObjectId;
+  manager?: mongoose.Types.ObjectId | null;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -24,7 +16,7 @@ const UserSchema = new Schema<IUser>(
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password:  { type: String, required: true, select: false }, 
     role: {
       type: String,
       enum: Object.values(Roles),
