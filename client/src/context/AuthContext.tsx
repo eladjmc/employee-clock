@@ -1,8 +1,9 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { AuthContextType } from '../types/auth';
 import { login as loginUserService } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
-import { Role } from '../types/user';
+import { LoginResponseDto } from '../dto/login.dto';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -17,7 +18,7 @@ export const AuthContext = createContext<AuthContextType>({
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [user, setUser] = useState<{ userId: string; role: Role } | null>(null);
+  const [user, setUser] = useState<LoginResponseDto| null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,9 +34,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     const response = await loginUserService({ email, password });
     localStorage.setItem('token', response.token);
-    localStorage.setItem('user', JSON.stringify({ userId: response.userId, role: response.role }));
+    localStorage.setItem('user', JSON.stringify(response));
+
     setIsAuthenticated(true);
-    setUser({ userId: response.userId, role: response.role });
+    setUser(response);
   };
 
   const logout = () => {

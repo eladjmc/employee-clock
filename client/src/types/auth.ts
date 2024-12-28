@@ -1,11 +1,8 @@
-import { Role } from './user';
+import { LoginResponseDto } from '../dto/login.dto';
 
 export interface AuthContextType {
   isAuthenticated: boolean;
-  user: {
-    userId: string;
-    role: Role;
-  } | null;
+  user: LoginResponseDto | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }

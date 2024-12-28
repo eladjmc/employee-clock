@@ -37,7 +37,7 @@ const AppRoutes: React.FC = () => {
         path="/manager-dashboard"
         element={
           isAuthenticated && user?.role === 'MANAGER' ? (
-            <ManagerDashboard />
+            <Dashboard />
           ) : (
             <Navigate to="/login" />
           )
