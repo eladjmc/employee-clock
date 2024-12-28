@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { getUserByEmail, getUserByEmailWithPassword, getUserById } from "../dal/user.dal";
 import { ApiError } from "../errors/api-error";
 import { TokenPayloadDto } from "../dto/token-payload.dto";
-import { IUser, IUserNoPassword, UserModel } from "../models/user.model";
+import { UserModel } from "../models/user.model";
 
 export async function registerUser(
   firstName: string,

@@ -3,8 +3,8 @@ import { ApiError } from "../errors/api-error";
 import { createUser, getAllUsers, getUserById } from "../dal/user.dal";
 import { Roles } from "../constants/roles.constant";
 import { Types } from "mongoose";
-import { IUser } from "../models/user.model";
 
+// This will not be used, just for more realistic user management...don't need to review
 export async function createNewUser(dto: CreateUserDto) {
   if (dto.role === Roles.EMPLOYEE) {
     if (!dto.manager) {

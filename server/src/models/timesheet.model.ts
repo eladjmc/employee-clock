@@ -1,5 +1,6 @@
 import mongoose, { Schema, model } from 'mongoose';
 import { TimesheetStatus } from '../constants/timesheet.constant';
+import { NINETY_DAYS_IN_SECONDS } from '../constants/general.constant';
 
 export interface ITimesheet {
   employee: mongoose.Types.ObjectId;   // references a user (Employee or Manager)
@@ -27,5 +28,16 @@ const TimesheetSchema = new Schema<ITimesheet>(
   },
   { timestamps: true }
 );
+
+// TTL index: after 90 days from createdAt, doc is auto-removed (time to live...)
+TimesheetSchema.index(
+  { createdAt: 1 },
+  { expireAfterSeconds: NINETY_DAYS_IN_SECONDS }
+);
+
+// Additional indexes - for faster lookups basically
+TimesheetSchema.index({ manager: 1 });
+TimesheetSchema.index({ employee: 1 });
+TimesheetSchema.index({ manager: 1, status: 1 });
 
 export const TimesheetModel = model<ITimesheet>('Timesheet', TimesheetSchema);
