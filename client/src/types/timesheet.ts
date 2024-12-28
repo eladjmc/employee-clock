@@ -7,8 +7,10 @@ export enum TimesheetStatus {
   export interface Timesheet {
     id: string;
     employeeId: string;
+    employeeFirstName: string;
+    employeeLastName: string;
     managerId: string;
-    startTime: string; 
+    startTime: string;
     endTime?: string | null;
     reportText?: string;
     status: TimesheetStatus;

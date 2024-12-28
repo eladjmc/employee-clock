@@ -4,7 +4,7 @@ import {
   RegisterRequestDto,
 } from "../../dto/register.dto";
 import { register } from "../../services/authService";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/Input/Input";
 import Button from "../../components/Button/Button";
 import Modal from "../../components/Modal/Modal";
@@ -138,6 +138,9 @@ const Register: React.FC = () => {
           />
         )}
         <Button label="Register" type="submit" />
+        <div className="link-wrapper">
+          <Link to={"/login"}>Already Have Account? Login</Link>
+        </div>
       </form>
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>

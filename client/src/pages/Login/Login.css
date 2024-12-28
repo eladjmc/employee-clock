@@ -17,3 +17,6 @@
     flex-direction: column;
   }
   
+  .Login .link-wrapper{
+    margin-top: 15px;
+  }

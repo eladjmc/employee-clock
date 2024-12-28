@@ -1,55 +1,46 @@
-import {
-  MaterialReactTable,
-  MRT_ColumnDef,
-  MRT_PaginationState,
-} from "material-react-table";
+// src/components/Table/Table.tsx
 
-interface TableProps<T extends Record<string, any>> {
-  data: T[];
-  columns: MRT_ColumnDef<T, unknown>[];
-  rowCount?: number; // Total row count for server-side pagination
-  onPaginationChange?: (updaterOrValue: MRT_PaginationState | ((old: MRT_PaginationState) => MRT_PaginationState)) => void; // Pagination change handler
-  isLoading?: boolean; // Loading state
+import React from 'react';
+import './Table.css';
+
+interface Column<T> {
+  header: string;
+  accessor: (row: T) => React.ReactNode;
 }
 
-const Table = <T extends Record<string, any>>({
-  data,
-  columns,
-  rowCount,
-  onPaginationChange,
-  isLoading = false,
-}: TableProps<T>) => {
+interface TableProps<T extends { id: string }> {
+  columns: Column<T>[];
+  data: T[];
+}
+
+const Table = <T extends { id: string }>({ columns, data }: TableProps<T>) => {
   return (
-    <MaterialReactTable
-      columns={columns}
-      data={isLoading ? [] : data} // Pass an empty array if loading
-      manualPagination
-      rowCount={rowCount} // Total rows from server
-      onPaginationChange={(updaterOrValue) => {
-        if (onPaginationChange) {
-          if (typeof updaterOrValue === "function") {
-            onPaginationChange((prev) => updaterOrValue(prev));
-          } else {
-            onPaginationChange(updaterOrValue);
-          }
-        }
-      }}
-      enableRowSelection={true}
-      enableColumnOrdering={true}
-      enableGlobalFilter={false}
-      enableColumnFilters={false}
-      enableSorting={false}
-      muiTableProps={{
-        sx: {
-          "& .MuiTableCell-root": {
-            padding: "8px",
-          },
-          "& .MuiTableHead-root": {
-            backgroundColor: "#f5f5f5",
-          },
-        },
-      }}
-    />
+    <table className="CustomTable">
+      <thead>
+        <tr>
+          {columns.map((col, idx) => (
+            <th key={idx}>{col.header}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {data.length === 0 ? (
+          <tr>
+            <td colSpan={columns.length} style={{ textAlign: 'center' }}>
+              No data available.
+            </td>
+          </tr>
+        ) : (
+          data.map((row) => (
+            <tr key={row.id}>
+              {columns.map((col, idx) => (
+                <td  key={idx}>{col.accessor(row)}</td>
+              ))}
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
   );
 };
 

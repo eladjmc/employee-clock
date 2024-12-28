@@ -5,18 +5,20 @@ import "./Dashboard.css";
 import UserDetails from "../../components/Dashboard/UserDetails/UserDetails";
 import ClockButtons from "../../components/Dashboard/ClockButtons/ClockButtons";
 import TimesheetList from "../../components/Dashboard/TimesheetList/TimesheetList";
+import { Role } from "../../types/user";
 
 const Dashboard: React.FC = () => {
-  const { logout } = useContext(AuthContext);
-
+  const { user,logout } = useContext(AuthContext);
+  console.log(user?.manager);
+  
   return (
     <div className="Dashboard">
       <header>
         <UserDetails/>
         <Button label="Logout" onClick={logout} variant="secondary" />
       </header>
-        <ClockButtons/>
-        <TimesheetList/>
+        {user?.manager && <ClockButtons/>}
+        {user?.role === Role.MANAGER && <TimesheetList/>}
     </div>
   );
 };

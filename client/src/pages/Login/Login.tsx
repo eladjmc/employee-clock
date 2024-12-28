@@ -2,13 +2,13 @@ import React, { useContext, useState } from "react";
 import useForm from "../../hooks/useForm";
 import { LoginRequestDto } from "../../dto/login.dto";
 import { AuthContext } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/Input/Input";
 import Button from "../../components/Button/Button";
 import Modal from "../../components/Modal/Modal";
 import "./Login.css";
 import axios from "axios";
-import "./Login.css"
+import "./Login.css";
 interface LoginFormValues extends LoginRequestDto {
   [key: string]: unknown;
 }
@@ -75,6 +75,9 @@ const Login: React.FC = () => {
           placeholder="Enter your password"
         />
         <Button label="Login" type="submit" />
+        <div className="link-wrapper">
+          <Link to={"/register"}>No Account Yet? Register</Link>
+        </div>
       </form>
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>

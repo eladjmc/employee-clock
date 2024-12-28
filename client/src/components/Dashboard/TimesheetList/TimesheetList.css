@@ -1,0 +1,16 @@
+.TimesheetList {
+    margin-top: 20px;
+  }
+  
+  .TimesheetList h2 {
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+  }
+  

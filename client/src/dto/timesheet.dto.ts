@@ -74,6 +74,6 @@ export interface TimesheetResponseItem {
     startTime: string;
     endTime?: string | null;
     reportText?: string;
-    status: string;
+    status: TimesheetStatus;
     isActive: boolean;
   }

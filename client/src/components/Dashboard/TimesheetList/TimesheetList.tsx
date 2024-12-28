@@ -1,110 +1,134 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable prefer-const */
 import React, { useEffect, useState } from "react";
-import { getManagerReports } from "../../../services/timesheetService";
-import { TimesheetResponseItem } from "../../../dto/timesheet.dto";
-import { TimesheetStatus } from "../../../types/timesheet";
+import {
+  getManagerReports,
+  approveRejectTimesheet,
+} from "../../../services/timesheetService";
+import { Timesheet } from "../../../types/timesheet";
 import Table from "../../Table/Table";
+import ActionButtons from "../../ActionButtons/ActionButtons";
+import Modal from "../../Modal/Modal";
+import { transformToTimesheet } from "../../../utils/transformTimeSheet";
+import { TimesheetStatus } from "../../../types/timesheet";
 import Button from "../../Button/Button";
-import { MRT_ColumnDef, MRT_PaginationState } from "material-react-table";
+import "./TimesheetList.css";
+import PaginationControls from "../../PaginationControls/PaginationControls";
+import Spinner from "../../Spinner/Spinner";
+import { tableColumns } from "../../../utils/createColumnsTimesheet";
 
 const TimesheetList: React.FC = () => {
-  const [timesheets, setTimesheets] = useState<TimesheetResponseItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [totalCount, setTotalCount] = useState(0);
-  const [pagination, setPagination] = useState<MRT_PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
+  const [timesheets, setTimesheets] = useState<Timesheet[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize] = useState<number>(10); // Fixed page size as per requirements
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [modalMessage, setModalMessage] = useState<string>("");
+  const [selectedTimesheet, setSelectedTimesheet] = useState<Timesheet | null>(
+    null
+  );
+  const [actionType, setActionType] = useState<"approve" | "reject">("approve");
 
-  const fetchReports = async (currentPage: number, currentPageSize: number) => {
+  // Fetch timesheets based on current page
+  const fetchTimesheets = async (page: number) => {
     setLoading(true);
     try {
-      const response = await getManagerReports(currentPage, currentPageSize);
-      setTimesheets(response.items);
-      setTotalCount(response.totalCount); // Update total count from the server
+      const response = await getManagerReports(page, pageSize);
+      const transformedTimesheets = response.items.map(transformToTimesheet);
+      setTimesheets(transformedTimesheets);
+      setTotalCount(response.totalCount);
       setLoading(false);
-    } catch (error) {
-      console.error("Failed to fetch reports:", error);
+    } catch (error: unknown) {
+      console.error("Failed to fetch timesheets:", error);
       setLoading(false);
+      setModalMessage("Failed to fetch timesheets.");
+      setModalOpen(true);
     }
   };
 
   useEffect(() => {
-    fetchReports(pagination.pageIndex + 1, pagination.pageSize);
-  }, [pagination]);
+    fetchTimesheets(currentPage);
+  }, [currentPage]);
 
-  // Define columns with custom formatting
-  const columns: MRT_ColumnDef<TimesheetResponseItem, unknown>[] = [
+  const handleApprove = (timesheet: Timesheet) => {
+    setSelectedTimesheet(timesheet);
+    setActionType("approve");
+    setModalMessage("Are you sure you want to approve this timesheet?");
+    setModalOpen(true);
+  };
+
+  const handleReject = (timesheet: Timesheet) => {
+    setSelectedTimesheet(timesheet);
+    setActionType("reject");
+    setModalMessage("Are you sure you want to reject this timesheet?");
+    setModalOpen(true);
+  };
+
+  const confirmAction = async () => {
+    if (!selectedTimesheet) return;
+    setLoading(true);
+    try {
+      await approveRejectTimesheet(selectedTimesheet.id, {
+        status:
+          actionType === "approve"
+            ? TimesheetStatus.APPROVED
+            : TimesheetStatus.REJECTED,
+      });
+      setModalOpen(false);
+      setSelectedTimesheet(null);
+      setModalMessage(`Successfully ${actionType}d the timesheet.`);
+      fetchTimesheets(currentPage);
+    } catch (error: unknown) {
+      console.error(`Failed to ${actionType} timesheet:`, error);
+      let errorMsg = `Failed to ${actionType} timesheet.`;
+      setModalMessage(errorMsg);
+      setModalOpen(true);
+      setLoading(false);
+    }
+  };
+
+  const columns = [
+    ...tableColumns,
     {
-      accessorKey: "employee.firstName",
-      header: "Name",
-      Cell: ({ row }) =>
-        `${row.original.employee.firstName} ${row.original.employee.lastName}`,
-    },
-    {
-      accessorKey: "startTime",
-      header: "Date",
-      Cell: ({ row }) =>
-        new Date(row.original.startTime).toLocaleDateString(), // Format as MM/DD/YYYY
-    },
-    {
-      accessorKey: "startTime",
-      header: "Start Time",
-      Cell: ({ row }) =>
-        new Date(row.original.startTime).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }), // Format as HH:MM
-    },
-    {
-      accessorKey: "endTime",
-      header: "End Time",
-      Cell: ({ row }) =>
-        row.original.endTime
-          ? new Date(row.original.endTime).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-          : "N/A", // Format or show N/A if null
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-    },
-    {
-      accessorKey: "actions",
       header: "Actions",
-      Cell: ({ row }) => (
-        <>
-          {row.original.status === TimesheetStatus.PENDING && (
-            <>
-              <Button label="Approve" onClick={() => console.log("Approve")} />
-              <Button
-                label="Reject"
-                onClick={() => console.log("Reject")}
-                variant="secondary"
-              />
-            </>
-          )}
-        </>
+      accessor: (row: Timesheet) => (
+        <ActionButtons
+          status={row.status}
+          onApprove={() => handleApprove(row)}
+          onReject={() => handleReject(row)}
+        />
       ),
     },
   ];
 
   return (
-    <section>
-      <Table
-        columns={columns}
-        data={timesheets}
-        rowCount={totalCount}
-        onPaginationChange={(updaterOrValue) => {
-          if (typeof updaterOrValue === "function") {
-            setPagination((prev) => updaterOrValue(prev));
-          } else {
-            setPagination(updaterOrValue);
-          }
-        }}
-        isLoading={loading}
-      />
+    <section className="TimesheetList">
+      <h2>Timesheet List</h2>
+      {loading ? (
+        <Spinner />
+      ) : (
+        <>
+          <Table columns={columns} data={timesheets} />
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={Math.ceil(totalCount / pageSize)}
+            onPageChange={setCurrentPage}
+          />
+        </>
+      )}
+      {/* Confirmation Modal */}
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
+        <p>{modalMessage}</p>
+        <div className="modal-buttons">
+          <Button label="Yes" onClick={confirmAction} />
+          <Button
+            label="No"
+            onClick={() => setModalOpen(false)}
+            variant="secondary"
+          />
+        </div>
+      </Modal>
     </section>
   );
 };
