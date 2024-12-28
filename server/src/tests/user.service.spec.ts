@@ -2,7 +2,7 @@ import * as UserService from '../services/user.service';
 import * as UserDal from '../dal/user.dal';
 import { Roles } from '../constants/roles.constant';
 import { ApiError } from '../errors/api-error';
-
+// Will add more tests if ill have time
 jest.mock('../dal/user.dal.ts');
 
 describe('UserService', () => {
