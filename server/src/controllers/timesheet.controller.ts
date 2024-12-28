@@ -1,32 +1,62 @@
 import { Request, Response, NextFunction } from 'express';
-import * as TimesheetService from '../services/timesheet.service';
-import { CreateTimesheetDto } from '../dto/create-timesheet.dto';
+import * as TimesheetService  from '../services/timesheet.service';
 import { TimesheetStatus } from '../constants/timesheet.constant';
+import { findManagerByUserId } from '../services/user.service';
 
-export async function createTimesheetController(req: Request, res: Response, next: NextFunction) {
+export async function clockInController(req: Request, res: Response, next: NextFunction) {
   try {
-    const dto: CreateTimesheetDto = req.body;
-    const timesheet = await TimesheetService.createNewTimesheet(dto);
-    res.status(201).json(timesheet);
+    const { userId } = (req as any).user;       // from JWT
+    const { reportText } = req.body;
+    const managerId = await findManagerByUserId(userId);
+
+    const newTimesheet = await TimesheetService.clockIn(userId, managerId, reportText);
+     res.status(201).json(newTimesheet);
   } catch (error) {
     next(error);
   }
 }
 
-export async function getTimesheetsForManagerController(req: Request, res: Response, next: NextFunction) {
+export async function clockOutController(req: Request, res: Response, next: NextFunction) {
   try {
-    const managerId = req.params.managerId;
-    const timesheets = await TimesheetService.getManagerTimesheets(managerId);
-    res.json(timesheets);
+    const { userId } = (req as any).user;  // from JWT
+    const { reportText } = req.body;
+
+    const updatedTimesheet = await TimesheetService.clockOut(userId, reportText);
+     res.json(updatedTimesheet);
   } catch (error) {
     next(error);
   }
 }
 
-export async function approveRejectTimesheetController(req: Request, res: Response, next: NextFunction) {
+export async function getClockInStatusController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { userId } = (req as any).user;
+    const activeTimesheet = await TimesheetService.getClockInStatus(userId);
+    /**
+     * If activeTimesheet != null => user is clocked in, 
+     * else user is clocked out
+     */
+     res.json({ activeTimesheet });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function managerPendingReportsController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { userId } = (req as any).user; // manager
+    const pendingList = await TimesheetService.getManagerPendingReports(userId);
+     res.json(pendingList);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function approveRejectController(req: Request, res: Response, next: NextFunction) {
   try {
     const { timesheetId } = req.params;
-    const { status } = req.body; // 'APPROVED' or 'REJECTED'
+    const { status } = req.body;  // "APPROVED" or "REJECTED"
+
     const updated = await TimesheetService.approveOrRejectTimesheet(timesheetId, status as TimesheetStatus);
     res.json(updated);
   } catch (error) {

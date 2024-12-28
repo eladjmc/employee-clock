@@ -1,31 +1,51 @@
 import { Router } from 'express';
 import {
-  createTimesheetController,
-  getTimesheetsForManagerController,
-  approveRejectTimesheetController
+  clockInController,
+  clockOutController,
+  getClockInStatusController,
+  managerPendingReportsController,
+  approveRejectController
 } from '../controllers/timesheet.controller';
 import { authenticateJWT, authorizeRoles } from '../middleware/auth.middleware';
 import { Roles } from '../constants/roles.constant';
 
 const timesheetRouter = Router();
 
-// Employee creates timesheet (only an EMPLOYEE can do this)
-timesheetRouter.post('/', authenticateJWT, authorizeRoles(Roles.EMPLOYEE), createTimesheetController);
 
-// Manager gets timesheets of direct reports
-timesheetRouter.get(
-  '/manager/:managerId',
+ // Employee or Manager can clock in. 
+timesheetRouter.post(
+  '/clockin',
   authenticateJWT,
-  authorizeRoles(Roles.MANAGER),
-  getTimesheetsForManagerController
+  // No strict role check here. Because you might be a manager who is also an employee under a bigger manager. 
+  clockInController
 );
 
-// Manager approves/rejects a timesheet
+
+// Clock out route.
+timesheetRouter.put('/clockout', authenticateJWT, clockOutController);
+
+// Get the clock-in status of the logged in user:
+// returns the active timesheet or null(null means he didn't clock in)
+timesheetRouter.get(
+  '/status',
+  authenticateJWT,
+  getClockInStatusController
+);
+
+// Get all the pending clocks of the employees for a manager
+timesheetRouter.get(
+  '/manager/pending',
+  authenticateJWT,
+  authorizeRoles(Roles.MANAGER),
+  managerPendingReportsController
+);
+
+// Approve / Reject timesheet
 timesheetRouter.put(
   '/:timesheetId/status',
   authenticateJWT,
   authorizeRoles(Roles.MANAGER),
-  approveRejectTimesheetController
+  approveRejectController
 );
 
 export default timesheetRouter;

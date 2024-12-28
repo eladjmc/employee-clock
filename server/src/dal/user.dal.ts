@@ -12,7 +12,11 @@ export async function getAllUsers() {
 export async function getUserByEmail(email: string) {
   return UserModel.findOne({ email });
 }
+export async function getUserByEmailWithPassword(email: string) {
+  return UserModel.findOne({ email }).select('+password');
+}
 
 export async function getUserById(userId: string) {
   return UserModel.findById(userId);
 }
+
