@@ -14,7 +14,7 @@ export async function registerController(req: Request, res: Response, next: Next
     if (!Object.values(Roles).includes(role)) {
       throw new ApiError(400, 'Invalid role provided');
     }
-    if(role === Roles.EMPLOYEE){
+    if(role === Roles.EMPLOYEE || manager){
         await AuthService.validateUsersManagerExists(manager);
     }
 

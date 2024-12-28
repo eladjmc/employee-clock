@@ -23,9 +23,12 @@ app.use(helmet());
 app.use(morgan('dev'));
 
 // Routes
-app.use('/api/auth', authRouter);
-app.use('/api/users', userRouter);
-app.use('/api/timesheets', timesheetRouter);
+app.use('/api/v1/auth', authRouter);
+
+// This is just for realistic approach (need to seed database with managers and they should add the employee ot other managers) - I won't do it in the POC
+app.use('/api/v1/users', userRouter); 
+
+app.use('/api//v1/timesheets', timesheetRouter);
 
 // Error Handling
 app.use(errorHandler);
