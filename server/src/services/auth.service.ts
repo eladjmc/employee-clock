@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { getUserByEmail, getUserById } from "../dal/user.dal";
+import { getUserByEmail, getUserByEmailWithPassword, getUserById } from "../dal/user.dal";
 import { ApiError } from "../errors/api-error";
 import { TokenPayloadDto } from "../dto/token-payload.dto";
-import { IUser, IUserNoPassword, UserModel } from "../models/user.model";
+import { UserModel } from "../models/user.model";
 
 export async function registerUser(
   firstName: string,
@@ -35,7 +35,7 @@ export async function registerUser(
 }
 
 export async function loginUser(email: string, password: string) {
-  const user = await getUserByEmail(email);
+  const user = await getUserByEmailWithPassword(email);
   if (!user) {
     throw new ApiError(401, "Invalid email or password");
   }

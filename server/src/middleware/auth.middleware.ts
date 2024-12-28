@@ -30,7 +30,7 @@ export function authenticateJWT(req: Request, _res: Response, next: NextFunction
   }
 }
 
-// Helper to ensure the user has a specific role
+// Helper to ensure the user has a specific role (for us its basically Manager or Employee right now)
 export function authorizeRoles(...allowedRoles: string[]) {
   return (req: Request, _res: Response, next: NextFunction) => {
     const user = (req as any).user;

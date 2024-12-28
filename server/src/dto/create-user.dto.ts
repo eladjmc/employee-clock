@@ -6,5 +6,5 @@ export class CreateUserDto {
   email!: string;
   password!: string;
   role!: Roles;
-  manager?: string; // If role = EMPLOYEE, manager is required
+  manager?: string | null; // If role is EMPLOYEE, manager is required
 }
