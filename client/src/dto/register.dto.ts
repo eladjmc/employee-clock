@@ -5,9 +5,11 @@ export interface RegisterRequestDto {
   lastName: string;
   email: string;
   password: string;
-  role: Role;
-  manager?: string | null;
+  role: string;
+  manager: string;
+  [key: string]: unknown; // Allows dynamic key access
 }
+
 
 export interface RegisterResponseDto {
   id: string;

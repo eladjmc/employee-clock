@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { useState } from 'react';
 
 type FormErrors<T extends Record<string, unknown>> = {
   [Key in keyof T]?: string;
@@ -9,13 +9,14 @@ const useForm = <T extends Record<string, unknown>>(initialValues: T) => {
   const [errors, setErrors] = useState<FormErrors<T>>({});
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | 
+    { target: { name: string; value: string } }
   ) => {
-    const { name, value } = e.target;
-    setValues({
-      ...values,
+    const { name, value } = event.target;
+    setValues((prevValues) => ({
+      ...prevValues,
       [name]: value,
-    });
+    }));
   };
 
   const validate = (validateFn: (values: T) => FormErrors<T>) => {
