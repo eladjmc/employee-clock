@@ -38,6 +38,6 @@ TimesheetSchema.index(
 // Additional indexes - for faster lookups basically
 TimesheetSchema.index({ manager: 1 });
 TimesheetSchema.index({ employee: 1 });
-TimesheetSchema.index({ manager: 1, status: 1 });
+TimesheetSchema.index({ manager: 1, isActive: 1 });
 
 export const TimesheetModel = model<ITimesheet>('Timesheet', TimesheetSchema);

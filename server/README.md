@@ -19,6 +19,9 @@
 
 ## **Additional Notes**
 
+- ### POC will not be using users routes
+   - **``api/v1/users``** : used for more realistic approch that only manager can add other user. For this i will need to seed db with managers and it will make to POC more complex. for now, i left it in but it will not be in use on the client, instead we will use ``/api/v1/auth/register`` to create a user
+
 1. **Middleware Applied to Routes:**
    - **`authenticateJWT`**: Ensures that the user is authenticated via JWT for protected routes.
    - **`authorizeRoles`**: Restricts access based on user roles (e.g., `MANAGER`).

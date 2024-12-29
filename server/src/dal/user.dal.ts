@@ -20,3 +20,6 @@ export async function getUserById(userId: string) {
   return UserModel.findById(userId);
 }
 
+export async function getUserByEmailWithManager(email: string) {
+  return UserModel.findOne({ email }).populate("manager");
+}

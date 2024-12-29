@@ -1,9 +1,14 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { getUserByEmail, getUserByEmailWithPassword, getUserById } from "../dal/user.dal";
+import {
+  getUserByEmail,
+  getUserByEmailWithManager,
+  getUserByEmailWithPassword,
+  getUserById,
+} from "../dal/user.dal";
 import { ApiError } from "../errors/api-error";
 import { TokenPayloadDto } from "../dto/token-payload.dto";
-import { UserModel } from "../models/user.model";
+import { IUser, UserModel } from "../models/user.model";
 
 export async function registerUser(
   firstName: string,
@@ -52,13 +57,17 @@ export async function loginUser(email: string, password: string) {
     role: user.role,
   };
   const token = jwt.sign(tokenPayload, secretKey, { expiresIn: "1d" });
+  const userWithoutPassword = await getUserByEmailWithManager(email);
 
-  return { token, userId: user.id, role: user.role };
+  if (!userWithoutPassword) {
+    throw new ApiError(401, "Invalid email or password");
+  }
+  return { token, ...userWithoutPassword.toObject() };
 }
 
-export async function validateUsersManagerExists(managerId:string) {
-    const manager = await getUserById(managerId)
-    if(!manager){
-        throw new ApiError(404, "Manager does not exist")
-    }
+export async function validateUsersManagerExists(managerId: string) {
+  const manager = await getUserById(managerId);
+  if (!manager) {
+    throw new ApiError(404, "Manager does not exist");
+  }
 }

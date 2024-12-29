@@ -1,0 +1,28 @@
+.CustomTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .CustomTable th,
+  .CustomTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .CustomTable th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
+  
+  .CustomTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .CustomTable tr:hover {
+    background-color: #ddd;
+  }
+
+.CustomTable .cell {
+    display: flex;
+}

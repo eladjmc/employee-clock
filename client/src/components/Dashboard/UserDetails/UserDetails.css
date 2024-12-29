@@ -1,0 +1,39 @@
+.user-details {
+    width: 100%; /* Full width */
+    background-color: #ffffff;
+    padding: 16px 24px;
+    border-radius: 8px;
+    margin-bottom: 16px; /* Space between this and other components */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0; /* Matches the table's border style */
+    font-family: "Arial", sans-serif;
+    color: #333;
+  }
+  
+  .user-details__row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .user-details__row:last-child {
+    border-bottom: none; /* Remove border for the last row */
+  }
+  
+  .user-details__label {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #666;
+    text-align: left;
+    flex: 1;
+  }
+  
+  .user-details__value {
+    font-size: 1rem;
+    color: #333;
+    text-align: right;
+    flex: 2;
+    word-break: break-word; /* Handle long text gracefully */
+  }
+  
