@@ -1,4 +1,4 @@
-import React, {  useContext } from "react";
+import React, { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import Button from "../../components/Button/Button";
 import "./Dashboard.css";
@@ -8,17 +8,20 @@ import TimesheetList from "../../components/Dashboard/TimesheetList/TimesheetLis
 import { Role } from "../../types/user";
 
 const Dashboard: React.FC = () => {
-  const { user,logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   console.log(user?.manager);
-  
+
   return (
     <div className="Dashboard">
       <header>
-        <UserDetails/>
-        <Button label="Logout" onClick={logout} variant="secondary" />
+        <div className="logout-btn-wrapper">
+          <Button label="Logout" onClick={logout} variant="secondary" />
+        </div>
+        <h3>EMPLOYEE DETAILS</h3>
+        <UserDetails />
       </header>
-        {user?.manager && <ClockButtons/>}
-        {user?.role === Role.MANAGER && <TimesheetList/>}
+      {user?.manager && <ClockButtons />}
+      {user?.role === Role.MANAGER && <TimesheetList />}
     </div>
   );
 };

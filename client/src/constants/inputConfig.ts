@@ -1,4 +1,3 @@
-// src/constants/inputConfig.ts
 import { Role } from "../types/user";
 
 export const registerInputs = [

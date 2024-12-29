@@ -1,4 +1,3 @@
-// src/hooks/useRegisterForm.ts
 import { useState } from "react";
 import useForm from "./useForm";
 import { RegisterRequestDto } from "../dto/register.dto";

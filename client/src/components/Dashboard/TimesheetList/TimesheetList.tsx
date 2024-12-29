@@ -104,7 +104,7 @@ const TimesheetList: React.FC = () => {
 
   return (
     <section className="TimesheetList">
-      <h2>Timesheet List</h2>
+      <h3>Timesheet List</h3>
       {loading ? (
         <Spinner />
       ) : (
