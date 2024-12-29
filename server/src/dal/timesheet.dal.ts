@@ -90,14 +90,17 @@ export async function findAllClockedOutByManager(
 }
 
 // Count pending and clocked out timesheets by manager.
-export async function countPendingOrAllClockedOutByManager(managerId: string,status?:TimesheetStatus) {
-  const query = {
+export async function countPendingOrAllClockedOutByManager(managerId: string, status?: TimesheetStatus): Promise<number> {
+  const query: any = {
     manager: new mongoose.Types.ObjectId(managerId),
     isActive: false,
-    status
   };
 
-  console.log(query);
+  if (status) {
+    query.status = status;
+  }
+
+  console.log("Count Query:", query);
   
-  return TimesheetModel.countDocuments(query);
+  return TimesheetModel.countDocuments(query).exec();
 }
