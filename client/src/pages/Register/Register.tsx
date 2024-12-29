@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { useRegisterForm } from "../../hooks/useRegisterForm";
 import InputGroup from "../../components/InputGroup/InputGroup";
 import RoleSelector from "../../components/RoleSelector/RoleSelector";
@@ -43,6 +44,9 @@ const Register: React.FC = () => {
           role={values.role}
         />
         <Button label="Register" type="submit" />
+        <div className="link-wrapper">
+          <Link to={"/login"}>Already Registered? Login</Link>
+        </div>
       </form>
 
       <Modal isOpen={modalOpen} onClose={closeModal}>
