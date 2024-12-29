@@ -17,6 +17,8 @@ The system is designed with modularity, scalability, and best practices in mind,
 
 ## [Demo application link](https://clock-mdclone.netlify.app/)
 
+**Note**: Might wait 30 seconds after the first request - The backend docker is sleeping if inactive for over 10 minutes
+
 <br>
 
 ---
