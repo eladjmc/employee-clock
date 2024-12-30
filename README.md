@@ -19,6 +19,14 @@ The system is designed with modularity, scalability, and best practices in mind,
 
 **Note**: Might wait 30 seconds after the first request - The backend docker is sleeping if inactive for over 10 minutes
 
+**Flow** -> Register manager user with no manager! -> login to get the id of this manager(can check it in local storage) -> create employees/managers that has this manager as thier manager -> report hours. **Manager that does not have his own manager cannont clock in and out, and only able to view reports!**
+
+**Example users**: 
+
+- Top Manager mail:`Ayala@example.com` password: `ayala`
+- Manager under top manager: `elad@example.com` password: `elad`
+- Employee under top manager: `mony@example.com` password: `mony`
+
 <br>
 
 ---
